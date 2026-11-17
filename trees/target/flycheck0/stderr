@@ -1,9 +1,8 @@
-   0.007930625s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: false }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
-   0.007942125s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
-   0.008090625s  INFO prepare_target{force=false package_id=libc v0.2.191 target="libc"}: cargo::core::compiler::fingerprint: fingerprint dirty for libc v0.2.191/Check { test: false }/TargetInner { ..: lib_target("libc", ["lib"], "/Users/treja/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.191/src/lib.rs", Edition2021) }
-   0.008097375s  INFO prepare_target{force=false package_id=libc v0.2.191 target="libc"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
-   0.008368708s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: true }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
-   0.008372833s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
-    Checking libc v0.2.191
+   0.006143084s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: false }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
+   0.006165667s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
+   0.006781167s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: true }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
+   0.006786917s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
     Checking trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.44s
+error: could not compile `trees` (bin "trees" test) due to 3 previous errors; 5 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `trees` (bin "trees") due to 3 previous errors; 5 warnings emitted
