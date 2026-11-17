@@ -1,8 +1,8 @@
-   0.006143084s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: false }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
-   0.006165667s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
-   0.006781167s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: true }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
-   0.006786917s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
+   0.004604084s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: false }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
+   0.004617792s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
+   0.005026209s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint: fingerprint dirty for trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)/Check { test: true }/TargetInner { name: "trees", doc: true, ..: with_path("/Users/treja/CSE291Y/cse291y-project/trees/src/main.rs", Edition2024) }
+   0.005032500s  INFO prepare_target{force=false package_id=trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees) target="trees"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
     Checking trees v0.1.0 (/Users/treja/CSE291Y/cse291y-project/trees)
-error: could not compile `trees` (bin "trees" test) due to 3 previous errors; 5 warnings emitted
+error: could not compile `trees` (bin "trees") due to 3 previous errors
 warning: build failed, waiting for other jobs to finish...
-error: could not compile `trees` (bin "trees") due to 3 previous errors; 5 warnings emitted
+error: could not compile `trees` (bin "trees" test) due to 3 previous errors
