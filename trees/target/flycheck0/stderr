@@ -1,4 +1,4 @@
-error: extra comma in inline table, expected `=`
+error: expected `.`, `=`
  --> Cargo.toml:8:20
   |
 8 | serde = { "1.0.229", features = ["derive"] }

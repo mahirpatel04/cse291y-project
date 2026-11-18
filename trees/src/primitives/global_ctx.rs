@@ -8,14 +8,14 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Arc;
 
-use super::agent_ctx::{Agent, AgentKey};
+use super::agent_ctx::Agent;
 use super::comms::{AgentRes, CommsErr, Req, Res};
 
 pub struct Manager {
     virtual_path: Arc<Path>,
     snapshot_dir: PathBuf, // same btrfs fs as virtual_path
     sccache_dir: PathBuf,
-    agents: HashMap<AgentKey, Agent>,
+    agents: HashMap<String, Agent>,
     listener: UnixListener,
 }
 
@@ -77,16 +77,15 @@ impl Manager {
         Ok(())
     }
 
-    pub fn register_agent(&mut self, key: AgentKey) -> io::Result<PathBuf> {
+    pub fn register_agent(&mut self, key: String) -> io::Result<PathBuf> {
         if self.agents.contains_key(&key) {
-            return Err(io::Error::new(io::ErrorKind::AlreadyExists, format!("{key:?} already registered")));
+            return Err(io::Error::new(io::ErrorKind::AlreadyExists, format!("{key} already registered")));
         }
 
-        let name = key.name();
-        let host_path = self.snapshot_dir.join(&name);
+        let host_path = self.snapshot_dir.join(&key);
         self.snapshot(&host_path)?;
 
-        if let Err(e) = self.create_worktree(&name, &host_path) {
+        if let Err(e) = self.create_worktree(&key, &host_path) {
             let _ = delete_subvolume(&host_path);
             return Err(e);
         }
@@ -100,11 +99,11 @@ impl Manager {
         Ok(host_path)
     }
 
-    pub fn destroy_agent(&mut self, key: &AgentKey) -> io::Result<()> {
+    pub fn destroy_agent(&mut self, key: &str) -> io::Result<()> {
         let agent = self
             .agents
             .get(key)
-            .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, format!("no agent {key:?}")))?;
+            .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, format!("no agent {key}")))?;
 
         delete_subvolume(&agent.host_path)?;
         self.agents.remove(key);

@@ -2,18 +2,18 @@ use std::path::PathBuf;
 
 use serde::{Serialize, Deserialize};
 
-use super::agent_ctx::{Agent, AgentKey};
+use super::agent_ctx::Agent;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AgentReq {
-    pub key: AgentKey
+    pub key: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Req {
     Agent(AgentReq),
-    Register(AgentKey),
-    Destroy(AgentKey),
+    Register(String),
+    Destroy(String),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -23,7 +23,7 @@ pub struct AgentRes {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum CommsErr {
-    NotFound(AgentKey),
+    NotFound(String),
     BadRequest(String),
     Io(String),
 }
