@@ -1,40 +1,30 @@
 use std::ffi::CString;
 use std::io;
+use std::os::unix::ffi::OsStrExt;
 use std::path::Path;
+use std::ptr;
 use libc;
 
+// two unix wrappers
 pub fn unshare(flags: libc::c_int) -> io::Result<()> {
-    unsafe {
-        let res = libc::unshare(flags);
-        match res {
-            0 => Ok(()),
-            _ => panic!("failed to unmount")
-        }
+    match unsafe { libc::unshare(flags) } {
+        0 => Ok(()),
+        _ => Err(io::Error::last_os_error()),
     }
 }
-
 
 
 pub fn mount(source: Option<&Path>, target: &Path, flags: libc::c_ulong) -> io::Result<()> {
-    let src: &str= match source {
-        Some(s) => s.to_str().unwrap_or("none"),
-        _ => "none"
-    };
+    let src = source.map(|s| CString::new(s.as_os_str().as_bytes())).transpose()?;
+    let dest = CString::new(target.as_os_str().as_bytes())?;
+    let src_ptr = src.as_ref().map_or(ptr::null(), |s| s.as_ptr());
 
-    let dest= target.to_str().ok_or("oops")?;
-
-    let fs_type = "ext4";
-
-    let data = std::ptr::null();
-
-    unsafe {
-        let res = libc::mount(src.as_ptr(), dest.as_ptr(), fs_type.as_ptr(), flags, data);
-        match res {
-            0 => Ok(()),
-            _ => panic!("failed to unmount")
-        }
+    match unsafe { libc::mount(src_ptr, dest.as_ptr(), ptr::null(), flags, ptr::null()) } {
+        0 => Ok(()),
+        _ => Err(io::Error::last_os_error()),
     }
 }
+
 
 pub fn fork() -> io::Result<libc::pid_t> {
     unsafe {
@@ -84,16 +74,17 @@ pub fn agent_exec(source: &Path, target: &Path, cmd: &[String]) -> io::Result<i3
     let pid = fork()?;
 
     if pid == 0 {
-        let setup = std::panic::catch_unwind(|| -> io::Result<()> {
-            unshare(libc::CLONE_NEWNS)?;
-            mount(None, Path::new("/"), libc::MS_REC | libc::MS_PRIVATE)?;
-            mount(Some(source), target, libc::MS_BIND | libc::MS_REC)
-        });
-        if !matches!(setup, Ok(Ok(()))) {
-            exit(126);
+        let setup = unshare(libc::CLONE_NEWNS)
+            .and_then(|_| mount(None, Path::new("/"), libc::MS_REC | libc::MS_PRIVATE))
+            .and_then(|_| mount(Some(source), target, libc::MS_BIND | libc::MS_REC));
+
+        match setup {
+            Ok(()) => {
+                let _ = execvp(&argv);
+                exit(127)
+            }
+            Err(_) => exit(126),
         }
-        let _ = execvp(&argv);
-        exit(127);
     }
 
     let status = loop {
@@ -110,3 +101,4 @@ pub fn agent_exec(source: &Path, target: &Path, cmd: &[String]) -> io::Result<i3
         Ok(128 + libc::WTERMSIG(status))
     }
 }
+

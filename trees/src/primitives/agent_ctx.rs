@@ -12,11 +12,24 @@
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use serde::{Serialize, Deserialize};
 
 use super::trees;
 
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+pub struct AgentKey {
+    pub session_id: String,
+    pub agent_id: Option<String>,
+}
+
+impl AgentKey {
+    pub fn name(&self) -> String {
+        format!("agent-{}-{}", self.session_id, self.agent_id.as_deref().unwrap_or("main"))
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Agent {
-    pub id: u64,
     pub host_path: PathBuf,
     pub virtual_path: Arc<Path>,
     pub sccache_dir: Arc<Path>,
