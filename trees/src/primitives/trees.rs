@@ -26,6 +26,16 @@ pub fn mount(source: Option<&Path>, target: &Path, flags: libc::c_ulong) -> io::
 }
 
 
+pub fn chdir(path: &CString) -> io::Result<()> {
+    unsafe {
+        let res = libc::chdir(path.as_ptr());
+        match res {
+            0 => Ok(()),
+            _ => Err(io::Error::last_os_error()),
+        }
+    }
+}
+
 pub fn fork() -> io::Result<libc::pid_t> {
     unsafe {
         let res = libc::fork();
@@ -71,12 +81,15 @@ pub fn agent_exec(source: &Path, target: &Path, cmd: &[String]) -> io::Result<i3
     let mut argv: Vec<*const libc::c_char> = args.iter().map(|a| a.as_ptr()).collect();
     argv.push(std::ptr::null());
 
+    let cwd = CString::new(std::env::current_dir()?.as_os_str().as_bytes())?;
+
     let pid = fork()?;
 
     if pid == 0 {
         let setup = unshare(libc::CLONE_NEWNS)
             .and_then(|_| mount(None, Path::new("/"), libc::MS_REC | libc::MS_PRIVATE))
-            .and_then(|_| mount(Some(source), target, libc::MS_BIND | libc::MS_REC));
+            .and_then(|_| mount(Some(source), target, libc::MS_BIND | libc::MS_REC))
+            .and_then(|_| chdir(&cwd));
 
         match setup {
             Ok(()) => {
