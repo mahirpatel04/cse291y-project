@@ -1,0 +1,15 @@
+{
+  "env": {
+    "TREES_SOCK": "/run/trees.sock",
+    "TREES_VIRTUAL": "/home/you/proj",
+    "TREES_SNAPSHOTS": "/snapshots"
+  },
+  "hooks": {
+    "WorktreeCreate": [{ "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/create.sh" }] }],
+    "WorktreeRemove": [{ "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/remove.sh" }] }],
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/bash.sh" }] },
+      { "matcher": "Read|Edit|Write|Glob|Grep", "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/files.sh" }] }
+    ]
+  }
+}
