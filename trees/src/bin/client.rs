@@ -18,6 +18,7 @@ struct Cli {
 enum Cmd {
     Register { session_id: String, agent_id: String },
     Exec { session_id: String, agent_id: String, cmd: Vec<String> },
+    Destroy { session_id: String, agent_id: String },
 }
 
 // exec command for agent over virtual fs
@@ -62,6 +63,26 @@ fn register(socket_path: &Path, key: AgentKey) -> Result<PathBuf, CommsErr> {
     }
 }
 
+// destroy command for agent
+fn destroy(socket_path: &Path, key: AgentKey) -> Result<(), CommsErr> {
+    let io_err = |e: io::Error| CommsErr::Io(e.to_string());
+
+    let mut stream = UnixStream::connect(socket_path).map_err(io_err)?;
+    let mut msg = serde_json::to_string(&Req::Destroy(key)).map_err(|e| CommsErr::BadRequest(e.to_string()))?;
+    msg.push('\n');
+    stream.write_all(msg.as_bytes()).map_err(io_err)?;
+
+    let mut line = String::new();
+    BufReader::new(stream).read_line(&mut line).map_err(io_err)?;
+
+    match serde_json::from_str::<Res>(&line) {
+        Ok(Res::Destroy(res)) => res,
+        Ok(Res::Invalid(e)) => Err(e),
+        Ok(other) => Err(CommsErr::BadRequest(format!("unexpected response: {other:?}"))),
+        Err(e) => Err(CommsErr::BadRequest(e.to_string())),
+    }
+}
+
 fn main() -> ExitCode {
     let cli = Cli::parse();
 
@@ -83,6 +104,16 @@ fn main() -> ExitCode {
             let key = AgentKey { session_id, agent_id: Some(agent_id) };
             match exec(&cli.socket, key, &cmd) {
                 Ok(code) => ExitCode::from(code as u8),
+                Err(e) => {
+                    eprintln!("{e:?}");
+                    ExitCode::FAILURE
+                }
+            }
+        }
+        Cmd::Destroy { session_id, agent_id } => {
+            let key = AgentKey { session_id, agent_id: Some(agent_id) };
+            match destroy(&cli.socket, key) {
+                Ok(()) => ExitCode::SUCCESS,
                 Err(e) => {
                     eprintln!("{e:?}");
                     ExitCode::FAILURE
