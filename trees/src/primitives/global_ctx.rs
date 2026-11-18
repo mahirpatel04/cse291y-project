@@ -12,7 +12,7 @@ use super::agent_ctx::Agent;
 pub struct Manager {
     virtual_path: Arc<Path>,
     snapshot_dir: PathBuf, // same btrfs fs as virtual_path
-    sccache_dir: PathBuf,
+    sccache_dir: Arc<Path>,
     next_id: u64,
     agents: HashMap<u64, Agent>,
 }
@@ -24,13 +24,14 @@ impl Manager {
         Self {
             virtual_path: virtual_path.into(),
             snapshot_dir,
-            sccache_dir,
+            sccache_dir: sccache_dir.into(),
             next_id: 0,
             agents: HashMap::new(),
         }
     }
 
     pub fn sccache_dir(&self) -> &Path {
+        // used for build artifacts
         &self.sccache_dir
     }
 
@@ -43,6 +44,7 @@ impl Manager {
     }
 
     pub fn register_agent(&mut self) -> io::Result<&Agent> {
+        // claude will use this to register an agent with our manager
         let id = self.next_id;
         self.next_id += 1;
 
@@ -58,12 +60,14 @@ impl Manager {
             id,
             host_path,
             virtual_path: Arc::clone(&self.virtual_path),
+            sccache_dir: Arc::clone(&self.sccache_dir),
         };
         self.agents.insert(id, agent);
         Ok(&self.agents[&id])
     }
 
     pub fn destroy_agent(&mut self, id: u64) -> io::Result<()> {
+        // claude code will use this to cleanup
         let agent = self
             .agents
             .get(&id)
