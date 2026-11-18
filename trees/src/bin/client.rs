@@ -4,7 +4,6 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
-use trees::primitives::agent_ctx::AgentKey;
 use trees::primitives::comms::{AgentReq, CommsErr, Req, Res};
 
 #[derive(Parser)]
@@ -16,12 +15,12 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    Register { session_id: String, agent_id: String },
-    Exec { session_id: String, agent_id: String, cmd: Vec<String> },
+    Register { name: String },
+    Exec { name: String, cmd: Vec<String> },
 }
 
 // exec command for agent over virtual fs
-fn exec(socket_path: &Path, key: AgentKey, cmd: &[String]) -> Result<i32, CommsErr> {
+fn exec(socket_path: &Path, key: String, cmd: &[String]) -> Result<i32, CommsErr> {
     let io_err = |e: io::Error| CommsErr::Io(e.to_string());
 
     let mut stream = UnixStream::connect(socket_path).map_err(io_err)?;
@@ -43,7 +42,7 @@ fn exec(socket_path: &Path, key: AgentKey, cmd: &[String]) -> Result<i32, CommsE
 }
 
 // register command for agent
-fn register(socket_path: &Path, key: AgentKey) -> Result<PathBuf, CommsErr> {
+fn register(socket_path: &Path, key: String) -> Result<PathBuf, CommsErr> {
     let io_err = |e: io::Error| CommsErr::Io(e.to_string());
 
     let mut stream = UnixStream::connect(socket_path).map_err(io_err)?;
@@ -66,9 +65,8 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
 
     match cli.cmd {
-        Cmd::Register { session_id, agent_id } => {
-            let key = AgentKey { session_id, agent_id: Some(agent_id) };
-            match register(&cli.socket, key) {
+        Cmd::Register { name } => {
+            match register(&cli.socket, name) {
                 Ok(path) => {
                     println!("{}", path.display());
                     ExitCode::SUCCESS
@@ -79,9 +77,8 @@ fn main() -> ExitCode {
                 }
             }
         }
-        Cmd::Exec { session_id, agent_id, cmd } => {
-            let key = AgentKey { session_id, agent_id: Some(agent_id) };
-            match exec(&cli.socket, key, &cmd) {
+        Cmd::Exec { name, cmd } => {
+            match exec(&cli.socket, name, &cmd) {
                 Ok(code) => ExitCode::from(code as u8),
                 Err(e) => {
                     eprintln!("{e:?}");
