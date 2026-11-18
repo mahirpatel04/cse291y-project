@@ -12,7 +12,8 @@ pub struct AgentReq {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Req {
     Agent(AgentReq),
-    Register(String)
+    Register(String),
+    Destroy(String),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -31,5 +32,6 @@ pub enum CommsErr {
 pub enum Res {
     Agent(Result<AgentRes, CommsErr>),
     Register(Result<PathBuf, CommsErr>),
+    Destroy(Result<(), CommsErr>),
     Invalid(CommsErr),
 }

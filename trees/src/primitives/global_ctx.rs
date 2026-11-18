@@ -63,6 +63,10 @@ impl Manager {
                     self.register_agent(key)
                         .map_err(|e| CommsErr::Io(e.to_string())),
                 ),
+                Ok(Req::Destroy(key)) => Res::Destroy(
+                    self.destroy_agent(&key)
+                        .map_err(|e| CommsErr::Io(e.to_string())),
+                ),
                 Err(e) => Res::Invalid(CommsErr::BadRequest(e.to_string())),
             };
 
