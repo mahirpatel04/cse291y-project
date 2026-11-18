@@ -81,7 +81,12 @@ pub fn agent_exec(source: &Path, target: &Path, cmd: &[String]) -> io::Result<i3
     let mut argv: Vec<*const libc::c_char> = args.iter().map(|a| a.as_ptr()).collect();
     argv.push(std::ptr::null());
 
-    let cwd = CString::new(std::env::current_dir()?.as_os_str().as_bytes())?;
+    let cwd = std::env::current_dir()?;
+    let cwd = match cwd.strip_prefix(source) {
+        Ok(rel) => target.join(rel),
+        Err(_) => cwd,
+    };
+    let cwd = CString::new(cwd.as_os_str().as_bytes())?;
 
     let pid = fork()?;
 
